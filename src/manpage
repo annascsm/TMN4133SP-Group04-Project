@@ -1,0 +1,107 @@
+.TH SUPERCOMMAND 1 "October 2023" "1.0" "supercommand manual"
+.SH NAME
+supercommand \- A menu-driven system and command-line interface for file, directory, and keylogger operations.
+
+.SH SYNOPSIS
+.B supercommand
+.RI [ options ]
+
+.SH DESCRIPTION
+.B supercommand
+is a program that allows users to perform file, directory, and keylogger operations using system calls in C. It supports both interactive menu-based and command-line execution modes.
+
+.SH OPTIONS
+.TP
+.B \-m
+Run the program in command-line mode. Requires additional arguments to specify the mode and operation.
+
+.SH USAGE
+The program can be run in two modes: Menu-Based Mode and Command-Line Mode.
+
+.SS Menu-Based Mode
+Run the program without additional arguments:
+.PP
+.EX
+$ ./supercommand
+.EE
+
+.SS Command-Line Mode
+Run the program with the \fB-m\fP flag to specify the mode and operation:
+.PP
+.EX
+$ ./supercommand -m <mode> <operation> [arguments]
+.EE
+
+.SH MODES AND OPERATIONS
+.TP
+.B File Operations (Mode 1)
+.RS
+.IP "1. Create/Open File"
+Create or open a file with a specified name and path.
+.IP "2. Change File Permissions"
+Modify the file's permissions (e.g., 777) based on user input.
+.IP "3. Read File"
+Read content from a file and display it on the standard output.
+.IP "4. Write File"
+Write content from standard input to a file.
+.IP "5. Delete File"
+Remove a file given its name and path.
+.RE
+
+.TP
+.B Directory Operations (Mode 2)
+.RS
+.IP "1. Create Directory"
+Create a directory with a specified name and path.
+.IP "2. Delete Directory"
+Remove a directory with a specified name and path.
+.IP "3. Print Current Directory"
+Display the current working directory.
+.IP "4. List Current Directory"
+List all files and directories in the current directory.
+.RE
+
+.TP
+.B Keylogger Operations (Mode 3)
+.RS
+.IP "1. Initialize Keylogger"
+Run a keylogger in the background and record all keystrokes from the keyboard into a file named \fBkeylog.txt\fP.
+.RE
+
+.SH EXAMPLES
+.TP
+.B Create a New File
+.EX
+$ ./supercommand -m 1 1 newFile.txt
+.EE
+
+.TP
+.B Change File Permissions
+.EX
+$ ./supercommand -m 1 2 myFile.txt 777
+.EE
+
+.TP
+.B List Current Directory
+.EX
+$ ./supercommand -m 2 4
+.EE
+
+.SH AUTHORS
+Developed by Group 04 for the TMN4133 System Programming course.
+
+.SH SEE ALSO
+.BR mkdir (1),
+.BR chmod (1),
+.BR read (2),
+.BR write (2),
+.BR open (2),
+.BR close (2),
+.BR unlink (2),
+.BR rmdir (2),
+.BR getcwd (3),
+.BR opendir (3),
+.BR readdir (3),
+.BR closedir (3),
+.BR tcgetattr (3),
+.BR tcsetattr (3)
