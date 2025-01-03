@@ -90,10 +90,16 @@ void execute_command_line(int argc, char *argv[]) {
             write(STDERR_FILENO, "Error: Invalid directory operation arguments.\n", 46);
         }
     } else if (mode == 3) { // Keylogger Operations
-        if (argc >= 4) {
-            initialize_keylogger("keylog.txt");
+        if (operation == 1 && argc >= 5) { // Start Keylogger
+            filename = argv[4];
+            initialize_keylogger(filename);
+        } else if (operation == 2 && argc >= 5) { // Stop Keylogger
+            filename = argv[4];
+            stop_keylogger(filename);
+        } else if (operation == 3) { // Check Keylogger Status
+            check_keylogger_status();
         } else {
-            write(STDERR_FILENO, "Error: Missing log file name for keylogger operation.\n", 55);
+            write(STDERR_FILENO, "Error: Invalid keylogger operation arguments.\n", 46);
         }
     } else {
         write(STDERR_FILENO, "Error: Invalid mode.\n", 22);
@@ -234,9 +240,39 @@ void handle_directory_operations() {
 
 // Handle keylogger operations menu
 void handle_keylogger_operations() {
-    write(STDOUT_FILENO, "Initializing keylogger...\n", 26);
-    initialize_keylogger("keylog.txt");
+    char logfile[] = "keylog.txt";
+
+    int choice;
+    do {
+        
+        printf("\nKeylogger Control Menu:\n");
+        printf("1. Start keylogger\n");
+        printf("2. Stop keylogger\n");
+        printf("3. Check keylogger status\n");
+        printf("0. Exit program\n");
+        printf("Enter your choice: ");
+        
+        //scanf("%d", &choice);
+        choice = get_validated_choice(0, 3);
+
+        switch (choice) {
+            case 1:
+                initialize_keylogger(logfile);
+                break;
+            case 2:
+                stop_keylogger(logfile);
+                break;
+            case 3:
+                check_keylogger_status();
+                break;
+            case 0:
+                return;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }while (choice != 0) ;
 }
+
 
 void clear_input_buffer() {
     char c;
