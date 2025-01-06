@@ -1,10 +1,10 @@
-.TH SUPERCOMMAND 1 "October 2023" "1.0" "supercommand manual"
+.TH SUPERCOMMAND 1 "December 2024" "1.0" "supercommand manual"
 .SH NAME
 supercommand \- A menu-driven system and command-line interface for file, directory, and keylogger operations.
 
 .SH SYNOPSIS
 .B supercommand
-.RI [ options ]
+.RI [ operation ] [arguments]
 
 .SH DESCRIPTION
 .B supercommand
@@ -22,7 +22,7 @@ The program can be run in two modes: Menu-Based Mode and Command-Line Mode.
 Run the program without additional arguments:
 .PP
 .EX
-$ ./supercommand
+$ sudo ./supercommand
 .EE
 
 .SS Command-Line Mode
@@ -30,6 +30,11 @@ Run the program with the \fB-m\fP flag to specify the mode and operation:
 .PP
 .EX
 $ ./supercommand -m <mode> <operation> [arguments]
+.PP
+For running keylogger with command-line mode:
+.PP
+.EX
+$ sudo ./supercommand -m <mode> <operation>
 .EE
 
 .SH MODES AND OPERATIONS
@@ -39,7 +44,8 @@ $ ./supercommand -m <mode> <operation> [arguments]
 .IP "1. Create/Open File"
 Create or open a file with a specified name and path.
 .IP "2. Change File Permissions"
-Modify the file's permissions (e.g., 777) based on user input.
+Modify the file's permissions (e.g., 777) based on user input.  
+Note: Users must provide an additional argument to specify the permission code (e.g., 755 or 777), which defines the file's access rights for the owner, group, and others.
 .IP "3. Read File"
 Read content from a file and display it on the standard output.
 .IP "4. Write File"
@@ -64,8 +70,13 @@ List all files and directories in the current directory.
 .TP
 .B Keylogger Operations (Mode 3)
 .RS
-.IP "1. Initialize Keylogger"
-Run a keylogger in the background and record all keystrokes from the keyboard into a file named \fBkeylog.txt\fP.
+.IP "1. Start Keylogger"
+Run a keylogger in the background and record all keystrokes from the keyboard into a file named \fBkeylog.txt\fP.  
+Note: To start the keylogger, the user must run the program with \fBsudo\fP for administrative privileges.
+.IP "2. Stop Keylogger"
+Stop the keylogger. \fBsudo\fP is required to execute this operation.
+.IP "3. Show Keylogger Status"
+Display whether the keylogger is currently "Started" or "Stopped." \fBsudo\fP is required to execute this operation.
 .RE
 
 .SH EXAMPLES
@@ -78,7 +89,7 @@ $ ./supercommand -m 1 1 newFile.txt
 .TP
 .B Change File Permissions
 .EX
-$ ./supercommand -m 1 2 myFile.txt 777
+$ ./supercommand -m 1 2 myFile.txt 755
 .EE
 
 .TP
@@ -87,21 +98,36 @@ $ ./supercommand -m 1 2 myFile.txt 777
 $ ./supercommand -m 2 4
 .EE
 
+.TP
+.B Start Keylogger
+.EX
+$ sudo ./supercommand -m 3 1
+.EE
+
+.TP
+.B Stop Keylogger
+.EX
+$ sudo ./supercommand -m 3 2
+.EE
+
+.TP
+.B Check Keylogger Status
+.EX
+$ sudo ./supercommand -m 3 3
+.EE
+
+.SH LIMITATIONS
+.B supercommand
+is designed to work on Linux-based systems and requires \fBsudo\fP privileges for keylogger operations.
+
 .SH AUTHORS
-Developed by Group 04 for the TMN4133 System Programming course.
+Written by Group 04 for TMN4133 System Programming course.
+
+.SH COPYRIGHT
+This program was created as part of a university course project and is intended for educational purposes only.
+
+All rights reserved by TMN4133 System Programming Group 04. Unauthorized copying, distribution, or use of this program for commercial purposes is prohibited.
 
 .SH SEE ALSO
-.BR mkdir (1),
-.BR chmod (1),
-.BR read (2),
-.BR write (2),
-.BR open (2),
-.BR close (2),
-.BR unlink (2),
-.BR rmdir (2),
-.BR getcwd (3),
-.BR opendir (3),
-.BR readdir (3),
-.BR closedir (3),
-.BR tcgetattr (3),
-.BR tcsetattr (3)
+.B chmod (1),
+.B mkdir (1)
