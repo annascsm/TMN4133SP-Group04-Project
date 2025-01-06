@@ -110,6 +110,7 @@ void execute_command_line(int argc, char *argv[]) {
 
 // Function to display the main menu
 void display_main_menu() {
+    system("clear");
     const char *menu = "\n--- Main Menu ---\n"
                        "1. File Operations\n"
                        "2. Directory Operations\n"
@@ -121,6 +122,7 @@ void display_main_menu() {
 
 // Function to display the file operations submenu
 void display_file_menu() {
+    system("clear");
     const char *menu = "\n--- File Operations ---\n"
                        "1. Create/Open File\n"
                        "2. Change File Permissions\n"
@@ -134,6 +136,7 @@ void display_file_menu() {
 
 // Function to display the directory operations submenu
 void display_directory_menu() {
+    system("clear");
     const char *menu = "\n--- Directory Operations ---\n"
                        "1. Create Directory\n"
                        "2. Delete Directory\n"
@@ -243,7 +246,7 @@ void handle_keylogger_operations() {
 
     int choice;
     do {
-        
+        system("clear");
         printf("\nKeylogger Control Menu:\n");
         printf("1. Start keylogger\n");
         printf("2. Stop keylogger\n");
