@@ -5,6 +5,7 @@
 - **78855** ANNASTASHA CHANG SEE MAY
 - **79260** EE CHEE FAT
 - **79027** CHAI CHENG KANG
+- **81031** RAYNOLD GERRY ALFRED
   
 This project implements a **menu-driven system** and **command-line interface** for performing file, directory, and keylogger operations using system calls in C. It supports both interactive menu-based and command-line execution modes. This project was completed as part of our course requirements.
 
