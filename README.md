@@ -7,7 +7,7 @@
 - **79027** CHAI CHENG KANG  
 - **81031** RAYNOLD GERRY ANAK ALFRED  
 
-This project implements a **menu-driven system** and **command-line interface** for performing file, directory, and keylogger operations using system calls in C. It supports both interactive menu-based and command-line execution modes. This project was completed as part of our course requirements.
+This project implements a **menu-driven system** and **command-line interface** for performing file, directory, and keylogger operations using system calls in C. It supports both interactive menu-based and command-line execution modes. This project was completed as part of our course requirements under the supervision of **Associate Professor Dr. Johari bin Abdullah**, at the **Universiti of Malaysia Sarawak, UNIMAS**.
 
 ---
 
@@ -114,7 +114,7 @@ sudo ./supercommand
 ---
 
 ### **</> Command-Line Mode**  
-For running File Operation and Directory Operation use the following command:  
+For running **File Operation** and **Directory Operation** use the following command:  
 
 ```bash
 ./supercommand -m <mode> <operation> [arguments]
@@ -125,19 +125,21 @@ Whereby,
 - 2nd parameter: `operation` refers to the provided selection for file/directory operation 
 - 3rd parameter: `arguments` name of the file / file permission
 
+**Note:** For **Change File Permission**, an additional argument specifying the file permission code (e.g., `755`, `777`) is required.
+
 ---
 
-For running Keylogger Operation use the following command:  
+For running **Keylogger Operation** use the following command:  
 
 ```bash
 sudo ./supercommand -m <mode> <operation>
 ```    
 
 Whereby,
-- 1st parameter:   `mode` refers to keylogger operation mode
+- 1st parameter:   `mode` refers to the keylogger operation mode
 - 2nd parameter: `operation` refers to refers to the provided selection for keylogger operation 
 
-Note: `sudo` is required for keylogger operations as the searching and reading of the keyboard event needs the root privileges.
+**Note:** `sudo` is required for keylogger operations as the searching and reading of the keyboard event needs the root privileges.
 
 ---
 
@@ -207,8 +209,8 @@ TNN4133SP--Group04-Project/
 
 ---
 
-## 👨🏻‍📚 **Important Notes**
+## 🙏 **Acknowledgements**
 
-- Use `sudo` **only** for keylogger-related operations to ensure proper permissions.  
-- For running basic file and directory operations in Command Line Interface, `sudo` is not required.  
-- If you are unsure of how to use the program, refer to the **Usage Instructions** or run the program in **Menu-Based Mode** for guided interaction.
+We would like to express our deepest gratitude to **Associate Professor Dr. Johari bin Abdullah** for his valuable guidance and support throughout this project. His expertise and encouragement have been instrumental in helping us complete this work.
+
+We also acknowledge the assistance provided by **ChatGPT**, which helped clarify technical concepts and refine our project documentation. Thank you for your support!
